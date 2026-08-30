@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>Robux Savings Quest</title>
+<meta name="description" content="A live savings tracker for 4 players each saving toward 1,000 Robux." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Ambient background glow orbs -->
+<div class="bg-orbs" aria-hidden="true">
+  <span class="orb orb-blue"></span>
+  <span class="orb orb-purple"></span>
+  <span class="orb orb-cyan"></span>
+</div>
+
+<!-- ===================== PUBLIC DASHBOARD ===================== -->
+<div class="page" id="page">
+
+  <header class="hero">
+    <div class="hero-eyebrow">LIVE · UPDATES IN REAL TIME</div>
+    <h1 class="hero-title">
+      <span class="hero-emoji">🎮</span> ROBUX SAVINGS QUEST
+    </h1>
+    <p class="hero-subtitle">4 players. 4 goals. 4,000 Robux.</p>
+
+    <div class="group-hero-card" id="groupHeroCard">
+      <div class="group-hero-top">
+        <span class="group-hero-label">TOTAL GROUP SAVINGS</span>
+        <span class="group-hero-count" id="goalsCompleteLabel">0 / 4 goals complete</span>
+      </div>
+      <div class="group-hero-amount">
+        <span class="amount-current" id="groupCurrent">₱0</span>
+        <span class="amount-sep">/</span>
+        <span class="amount-target">₱1,380</span>
+      </div>
+      <div class="progress-track group-track">
+        <div class="progress-fill group-fill" id="groupProgressFill" style="width:0%">
+          <span class="progress-glint"></span>
+        </div>
+      </div>
+      <div class="group-hero-bottom">
+        <span id="groupPercentLabel">0.0%</span>
+        <span id="groupRemainingLabel">₱1,380 remaining</span>
+      </div>
+      <div class="group-hero-robux">🎮 Total Robux goal: <strong>4,000 Robux</strong></div>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <section class="players-section" aria-label="Player progress">
+      <h2 class="section-title"><span class="section-title-bar"></span>Player Progress</h2>
+      <div class="players-grid" id="playersGrid">
+        <!-- Player cards injected by app.js -->
+      </div>
+    </section>
+
+    <section class="activity-section" aria-label="Recent activity">
+      <h2 class="section-title"><span class="section-title-bar"></span>Recent Activity</h2>
+      <div class="activity-feed" id="activityFeed">
+        <div class="empty-state">
+          <span class="empty-icon">🌙</span>
+          <p>No contributions yet. The quest begins with the first deposit.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>This site is a <strong>savings tracker only</strong>. It does not purchase, sell, transfer, or grant Robux in any way — it simply keeps score of money set aside toward each player's own future purchase.</p>
+  </footer>
+</div>
+
+<!-- ===================== MILESTONE TOASTS ===================== -->
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<!-- ===================== ADMIN LOGIN MODAL ===================== -->
+<div class="modal-overlay" id="adminLoginOverlay" hidden>
+  <div class="modal admin-modal" role="dialog" aria-modal="true" aria-labelledby="adminLoginTitle">
+    <button class="modal-close" id="closeLoginModal" aria-label="Close">✕</button>
+    <h3 id="adminLoginTitle">🔒 Admin Access</h3>
+    <p class="modal-sub">Sign in to manage contributions. Visitors never see this unless they know the shortcut.</p>
+    <form id="adminLoginForm" class="admin-form">
+      <label>
+        Email
+        <input type="email" id="adminEmail" autocomplete="username" required />
+      </label>
+      <label>
+        Password
+        <input type="password" id="adminPassword" autocomplete="current-password" required />
+      </label>
+      <p class="form-error" id="loginError" hidden></p>
+      <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== ADMIN PANEL MODAL ===================== -->
+<div class="modal-overlay" id="adminPanelOverlay" hidden>
+  <div class="modal admin-modal admin-panel-modal" role="dialog" aria-modal="true" aria-labelledby="adminPanelTitle">
+    <button class="modal-close" id="closePanelModal" aria-label="Close">✕</button>
+    <div class="admin-panel-header">
+      <h3 id="adminPanelTitle">🛠️ Admin Panel</h3>
+      <button class="btn btn-ghost btn-small" id="signOutBtn">Sign Out</button>
+    </div>
+
+    <div class="admin-section">
+      <h4>Add Contribution</h4>
+      <form id="addContributionForm" class="admin-form admin-form-row">
+        <label>
+          Player
+          <select id="contribMember" required>
+            <option value="AJ">AJ</option>
+            <option value="PI">PI</option>
+            <option value="John2x">John2x</option>
+            <option value="Owner">Owner</option>
+          </select>
+        </label>
+        <label>
+          Amount (₱)
+          <input type="number" id="contribAmount" min="0" step="0.01" required />
+        </label>
+        <label class="admin-form-note">
+          Note (optional)
+          <input type="text" id="contribNote" maxlength="80" placeholder="e.g. Daily savings" />
+        </label>
+        <button type="submit" class="btn btn-primary btn-block">➕ Add Contribution</button>
+      </form>
+      <p class="form-success" id="addSuccess" hidden>✅ Contribution added!</p>
+      <p class="form-error" id="addError" hidden></p>
+    </div>
+
+    <div class="admin-section">
+      <h4>Reset a Player's Progress</h4>
+      <p class="admin-hint">This permanently deletes every contribution for that player. This cannot be undone.</p>
+      <div class="reset-row">
+        <select id="resetMember">
+          <option value="AJ">AJ</option>
+          <option value="PI">PI</option>
+          <option value="John2x">John2x</option>
+          <option value="Owner">Owner</option>
+        </select>
+        <button class="btn btn-danger" id="resetBtn">Reset Player</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h4>All Contributions</h4>
+      <div class="admin-table-wrap">
+        <table class="admin-table" id="adminTable">
+          <thead>
+            <tr><th>Player</th><th>Amount</th><th>Note</th><th>Date</th><th></th></tr>
+          </thead>
+          <tbody id="adminTableBody">
+            <!-- rows injected by app.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== EDIT CONTRIBUTION MODAL ===================== -->
+<div class="modal-overlay" id="editOverlay" hidden>
+  <div class="modal admin-modal" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+    <button class="modal-close" id="closeEditModal" aria-label="Close">✕</button>
+    <h3 id="editTitle">✏️ Edit Contribution</h3>
+    <form id="editContributionForm" class="admin-form">
+      <input type="hidden" id="editId" />
+      <label>
+        Player
+        <select id="editMember" required>
+          <option value="AJ">AJ</option>
+          <option value="PI">PI</option>
+          <option value="John2x">John2x</option>
+          <option value="Owner">Owner</option>
+        </select>
+      </label>
+      <label>
+        Amount (₱)
+        <input type="number" id="editAmount" min="0" step="0.01" required />
+      </label>
+      <label>
+        Note (optional)
+        <input type="text" id="editNote" maxlength="80" />
+      </label>
+      <p class="form-error" id="editError" hidden></p>
+      <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== CONFIRM DIALOG (delete / reset) ===================== -->
+<div class="modal-overlay" id="confirmOverlay" hidden>
+  <div class="modal confirm-modal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <h3 id="confirmTitle">Are you sure?</h3>
+    <p id="confirmBody"></p>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" id="confirmCancel">Cancel</button>
+      <button class="btn btn-danger" id="confirmOk">Yes, do it</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

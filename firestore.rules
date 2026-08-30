@@ -1,0 +1,39 @@
+rules_version = '2';
+
+// =========================================================
+// ROBUX SAVINGS QUEST — Firestore Security Rules
+//
+// Rules:
+//  - Anyone (no login) can READ contributions — this powers the
+//    public dashboard.
+//  - Only the signed-in Admin account can WRITE (add, edit, delete).
+//  - Replace ADMIN_UID_PLACEHOLDER below with the real Firebase Auth
+//    UID of your Admin account (see the setup guide, step 4).
+// =========================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /contributions/{contributionId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Optional settings collection (goal amounts, member list).
+    // Public can read it; only Admin can change it.
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Deny everything else by default.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.uid == "ADMIN_UID_PLACEHOLDER";
+    }
+  }
+}
