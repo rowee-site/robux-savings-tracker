@@ -32,12 +32,12 @@ import {
 // See the setup guide for exactly where to find this.
 // ---------------------------------------------------------
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyCVnlbYcWXJq0hPybFOraDIsOJTuKNzUb4",
+  authDomain: "robux-savings-tracker-79daa.firebaseapp.com",
+  projectId: "robux-savings-tracker-79daa",
+  storageBucket: "robux-savings-tracker-79daa.firebasestorage.app",
+  messagingSenderId: "620831938360",
+  appId: "1:620831938360:web:e4ec4b529ef9df5705d3cd",
 };
 
 const app = initializeApp(firebaseConfig);
